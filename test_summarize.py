@@ -4,7 +4,7 @@ from pathlib import Path
 
 from summarize import summarize_csv
 
-
+#ตรวจการประมวลผล csv ด้วย python
 class SummarizeCsvTests(unittest.TestCase):
     def test_included_camera_counts_csv(self) -> None:
         csv_file = Path(__file__).with_name("camera_counts.csv")

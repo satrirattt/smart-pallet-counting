@@ -2,7 +2,7 @@ import sqlite3
 import unittest
 from pathlib import Path
 
-
+#ตรวจโครงสร้างและพฤติกรรมของฐานข้อมูล Sql
 SCHEMA_FILE = Path(__file__).with_name("schema.sql")
 
 
