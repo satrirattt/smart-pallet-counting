@@ -36,6 +36,7 @@ python init_db.py
 
 คำสั่งนี้รัน [`schema.sql`](schema.sql) และสร้างไฟล์ `camera_counts.db`
 พร้อมตาราง `camera_count_results` การรันซ้ำไม่เพิ่มข้อมูลตัวอย่างซ้ำ
+หาก schema มีข้อผิดพลาด การเปลี่ยนแปลงรอบนั้นจะถูก rollback
 
 รันชุดทดสอบด้วย:
 

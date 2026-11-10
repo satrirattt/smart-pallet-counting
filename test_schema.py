@@ -4,6 +4,8 @@ import sqlite3
 import unittest
 from pathlib import Path
 
+from init_db import apply_schema
+
 
 SCHEMA_FILE = Path(__file__).with_name("schema.sql")
 
@@ -13,7 +15,7 @@ class CameraCountSchemaTests(unittest.TestCase):
         # ใช้ฐานข้อมูลชั่วคราวเพื่อไม่แก้ไข camera_counts.db ของผู้ใช้
         self.connection = sqlite3.connect(":memory:")
         self.schema_sql = SCHEMA_FILE.read_text(encoding="utf-8")
-        self.connection.executescript(self.schema_sql)
+        apply_schema(self.connection, self.schema_sql)
 
     def tearDown(self) -> None:
         self.connection.close()
@@ -49,7 +51,7 @@ class CameraCountSchemaTests(unittest.TestCase):
         self.assertEqual(stored_count, 3)
 
     def test_running_schema_again_does_not_duplicate_sample_rows(self) -> None:
-        self.connection.executescript(self.schema_sql)
+        apply_schema(self.connection, self.schema_sql)
 
         count = self.connection.execute(
             "SELECT COUNT(*) FROM camera_count_results"
@@ -78,13 +80,31 @@ class CameraCountSchemaTests(unittest.TestCase):
             ("2026-11-09T09:00:00+07:00", "CAM-01", 3, "PALLET-A"),
         )
 
-        connection.executescript(self.schema_sql)
+        try:
+            apply_schema(connection, self.schema_sql)
 
-        count = connection.execute(
-            "SELECT COUNT(*) FROM camera_count_results"
+            count = connection.execute(
+                "SELECT COUNT(*) FROM camera_count_results"
+            ).fetchone()[0]
+            self.assertEqual(count, 5)
+        finally:
+            connection.close()
+
+    def test_failed_schema_rolls_back_partial_changes(self) -> None:
+        with self.assertRaises(sqlite3.OperationalError):
+            apply_schema(
+                self.connection,
+                "CREATE TABLE partial_table (id INTEGER); INVALID SQL;",
+            )
+
+        table_exists = self.connection.execute(
+            """
+            SELECT COUNT(*)
+            FROM sqlite_master
+            WHERE type = 'table' AND name = 'partial_table'
+            """
         ).fetchone()[0]
-        self.assertEqual(count, 5)
-        connection.close()
+        self.assertEqual(table_exists, 0)
 
 
 if __name__ == "__main__":
