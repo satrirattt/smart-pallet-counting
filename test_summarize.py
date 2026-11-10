@@ -1,5 +1,6 @@
 """ทดสอบการรวมยอดจาก CSV และการปฏิเสธข้อมูลที่ไม่ถูกต้อง."""
 
+import csv
 import unittest
 from io import StringIO
 from pathlib import Path
@@ -30,11 +31,13 @@ class SummarizeCsvTests(unittest.TestCase):
             {"BOX-A": 5, "BOX-B": 1},
         )
 
-    def test_empty_csv_returns_empty_result(self) -> None:
+    def test_header_only_csv_returns_empty_result(self) -> None:
         self.assertEqual(
             summarize_csv(StringIO("product_code,quantity\n")),
             {},
         )
+        with self.assertRaisesRegex(ValueError, "product_code and quantity"):
+            summarize_csv(StringIO(""))
 
     def test_missing_required_column_raises_value_error(self) -> None:
         with self.assertRaisesRegex(ValueError, "product_code and quantity"):
@@ -51,6 +54,9 @@ class SummarizeCsvTests(unittest.TestCase):
     def test_invalid_quantity_raises_value_error(self) -> None:
         with self.assertRaisesRegex(ValueError, "integer"):
             summarize_csv(StringIO("product_code,quantity\nBOX-A,abc\n"))
+
+        with self.assertRaises(csv.Error):
+            summarize_csv(StringIO('product_code,quantity\n"BOX-A"junk,2\n'))
 
     def test_non_positive_quantity_raises_value_error(self) -> None:
         for quantity in ("0", "-1"):

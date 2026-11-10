@@ -7,7 +7,7 @@ from typing import Dict, TextIO
 
 def summarize_csv(file_obj: TextIO) -> Dict[str, int]:
     """รวม quantity ของแต่ละ product_code จากไฟล์ CSV."""
-    reader = csv.DictReader(file_obj)  #อ่านไฟล์ CSV เป็นพจนานุกรม โดยแถวแรกของไฟล์ CSV จะถูกใช้เป็นหัวคอลัมน์
+    reader = csv.DictReader(file_obj, strict=True)
     required_columns = {"product_code", "quantity"}
 
     # ตรวจหัวคอลัมน์ก่อนอ่านข้อมูล เพื่อแจ้งข้อผิดพลาดของไฟล์ได้ตรงจุด
