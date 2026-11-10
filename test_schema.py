@@ -1,13 +1,16 @@
+"""ทดสอบโครงสร้าง SQLite และพฤติกรรมการป้องกันข้อมูลซ้ำ."""
+
 import sqlite3
 import unittest
 from pathlib import Path
 
-#ตรวจโครงสร้างและพฤติกรรมของฐานข้อมูล Sql
+
 SCHEMA_FILE = Path(__file__).with_name("schema.sql")
 
 
 class CameraCountSchemaTests(unittest.TestCase):
     def setUp(self) -> None:
+        # ใช้ฐานข้อมูลชั่วคราวเพื่อไม่แก้ไข camera_counts.db ของผู้ใช้
         self.connection = sqlite3.connect(":memory:")
         self.schema_sql = SCHEMA_FILE.read_text(encoding="utf-8")
         self.connection.executescript(self.schema_sql)

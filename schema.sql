@@ -1,3 +1,4 @@
+-- ตารางเก็บผลการนับจากกล้องและข้อมูล QR ที่อ่านได้
 CREATE TABLE IF NOT EXISTS camera_count_results (
     id INTEGER PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL,
@@ -6,9 +7,11 @@ CREATE TABLE IF NOT EXISTS camera_count_results (
     qr_text TEXT
 );
 
+-- ป้องกันการบันทึกผลซ้ำจากกล้องเดียวกันในเวลาเดียวกัน
 CREATE UNIQUE INDEX IF NOT EXISTS idx_camera_count_camera_timestamp
     ON camera_count_results (camera_id, timestamp);
 
+-- ข้อมูลจำลองสำหรับทดลองใช้งาน; แถวซ้ำจะถูกข้ามโดย unique index ด้านบน
 INSERT INTO camera_count_results
     (timestamp, camera_id, object_count, qr_text)
 VALUES

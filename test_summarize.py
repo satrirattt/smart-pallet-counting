@@ -1,11 +1,15 @@
+"""ทดสอบการรวมยอดจาก CSV และการปฏิเสธข้อมูลที่ไม่ถูกต้อง."""
+
 import unittest
 from io import StringIO
 from pathlib import Path
 
 from summarize import summarize_csv
 
-#ตรวจการประมวลผล csv ด้วย python
+
 class SummarizeCsvTests(unittest.TestCase):
+    """ชุดทดสอบสำหรับฟังก์ชัน summarize_csv."""
+
     def test_included_camera_counts_csv(self) -> None:
         csv_file = Path(__file__).with_name("camera_counts.csv")
         with csv_file.open(encoding="utf-8-sig", newline="") as file_obj:

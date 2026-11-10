@@ -1,3 +1,4 @@
 {
+  // schema.sql เป็น SQLite; ปิดการตรวจ T-SQL จาก SQL Server IntelliSense
   "mssql.intelliSense.enableErrorChecking": false
 }
