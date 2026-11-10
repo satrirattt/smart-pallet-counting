@@ -1,27 +1,28 @@
 # smart-pallet-counting
 
-Prototype system for pallet box counting using IP camera images, OpenCV, YOLO,
-QR Code detection, and a SQL database.
+ต้นแบบระบบนับกล่องบนพาเลตจากภาพกล้อง IP โดยใช้ OpenCV, YOLO, การตรวจจับ QR
+Code และฐานข้อมูล SQL
 
-## CSV counting example
+## ตัวอย่างการสรุปยอดจาก CSV
 
-The CSV example treats each row as one camera detection result. Its columns are
-the camera ID, capture time, product code, detected quantity, and model
-confidence.
+ข้อมูล CSV แต่ละแถวแทนผลการตรวจจับจากกล้องหนึ่งรายการ โดยมีคอลัมน์รหัสกล้อง
+เวลาที่บันทึก รหัสสินค้า จำนวนที่ตรวจพบ และคะแนนความมั่นใจของโมเดล (`confidence`)
+ค่า `confidence` ในตัวอย่างอยู่ระหว่าง 0 ถึง 1 โดยค่าที่สูงหมายถึงโมเดลมั่นใจ
+ในการตรวจจับมากขึ้น ทั้งนี้สคริปต์สรุปยอดใช้เฉพาะ `product_code` และ `quantity`
 
-Run the example with the included five-row sample:
+รันตัวอย่างด้วยข้อมูล 5 แถวที่อยู่ในโปรเจกต์:
 
 ```shell
 python summarize.py
 ```
 
-Or provide another CSV file:
+หรือระบุไฟล์ CSV อื่น:
 
 ```shell
 python summarize.py path/to/camera_counts.csv
 ```
 
-The expected totals for the included sample are:
+ผลรวมที่คาดว่าจะได้จากข้อมูลตัวอย่าง:
 
 ```text
 BOX-A: 5
@@ -29,31 +30,34 @@ BOX-B: 5
 BOX-C: 1
 ```
 
-The script requires `product_code` and `quantity` columns. It reports an error
-when either is missing, column names are duplicated, a row contains more values
-than its header, a product code is empty, or a quantity is not a positive
-integer.
+สคริปต์ต้องการคอลัมน์ `product_code` และ `quantity` และจะแจ้งข้อผิดพลาดเมื่อ
+ไม่มีคอลัมน์ที่จำเป็น ชื่อคอลัมน์ซ้ำ แถวมีจำนวนค่ามากกว่าหัวตาราง รหัสสินค้าว่าง
+หรือจำนวนไม่ใช่จำนวนเต็มบวก
 
-## SQL example
+## ตัวอย่าง SQL
 
-[`schema.sql`](schema.sql) creates a SQLite table with a timestamp, camera ID,
-detected object count, and optional QR text, then inserts five sample records.
-`qr_text` is `NULL` when the camera does not detect a QR code. The object count
-allows zero when no objects are detected. A unique index on `(camera_id,
-timestamp)` identifies one event per camera at each timestamp; duplicate
-inserts are ignored. Running the schema also adds the index to an existing
-table. If existing rows already have duplicate camera/timestamp pairs, remove
-or reconcile those duplicates before applying the schema. This assumes a camera
-cannot produce two separate count events with the exact same timestamp.
+ไฟล์ [`schema.sql`](schema.sql) สร้างตาราง SQLite สำหรับบันทึกเวลา รหัสกล้อง
+จำนวนวัตถุที่ตรวจพบ และข้อความ QR (ถ้ามี) จากนั้นเพิ่มข้อมูลตัวอย่าง 5 รายการ
+ค่า `qr_text` จะเป็น `NULL` เมื่อกล้องตรวจไม่พบ QR และ `object_count` อนุญาตให้เป็น
+ศูนย์ได้เมื่อไม่พบวัตถุ
 
-## Tests
+ดัชนีแบบไม่ซ้ำบน `(camera_id, timestamp)` ใช้ระบุเหตุการณ์ของกล้อง ณ เวลาหนึ่ง ๆ
+และละเว้นการเพิ่มข้อมูลซ้ำ เมื่อนำ schema ไปรันกับตารางที่มีอยู่แล้ว ระบบจะเพิ่ม
+ดัชนีนี้ด้วย หากข้อมูลเดิมมีคู่กล้องและเวลาซ้ำกัน ต้องลบหรือจัดการรายการซ้ำก่อน
+นำ schema ไปใช้ โดยสมมติว่ากล้องหนึ่งตัวไม่สร้างเหตุการณ์นับสองรายการที่มีเวลา
+ตรงกันทุกประการ
 
-Run the CSV summarizer tests with Python's built-in test runner:
+ไฟล์ schema ใช้ไวยากรณ์ SQLite ส่วนการตั้งค่า workspace ปิดการตรวจข้อผิดพลาดของ
+ส่วนขยาย SQL Server เพื่อไม่ให้แจ้งเตือน T-SQL กับไฟล์ SQLite นี้
+
+## การทดสอบ
+
+รันการทดสอบด้วย test runner ที่มาพร้อมกับ Python:
 
 ```shell
 python -m unittest -v
 ```
 
-The tests cover the included CSV sample, repeated product codes, an empty CSV,
-missing or duplicate columns, extra row values, invalid quantities, empty
-product codes, and duplicate SQL events.
+การทดสอบครอบคลุมไฟล์ CSV ตัวอย่าง การรวมรหัสสินค้าที่ซ้ำ CSV ว่าง คอลัมน์ที่ขาด
+หรือซ้ำ แถวที่มีค่าเกิน จำนวนที่ไม่ถูกต้อง รหัสสินค้าว่าง และการจัดการเหตุการณ์ SQL
+ที่ซ้ำกัน

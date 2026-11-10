@@ -6,7 +6,7 @@ from typing import Dict, TextIO
 
 
 def summarize_csv(file_obj: TextIO) -> Dict[str, int]:
-    reader = csv.DictReader(file_obj)
+    reader = csv.DictReader(file_obj)  #อ่านไฟล์ CSV เป็นพจนานุกรม โดยแถวแรกของไฟล์ CSV จะถูกใช้เป็นหัวคอลัมน์
     required_columns = {"product_code", "quantity"}
 
     if not reader.fieldnames or not required_columns.issubset(reader.fieldnames):
@@ -14,7 +14,7 @@ def summarize_csv(file_obj: TextIO) -> Dict[str, int]:
     if len(reader.fieldnames) != len(set(reader.fieldnames)):
         raise ValueError("CSV column names must be unique")
 
-    totals: Dict[str, int] = defaultdict(int)
+    totals: Dict[str, int] = defaultdict(int) #รวมจำนวนสินค้ารหัสเดียวกันด้วย defaultdict เพื่อให้ค่าเริ่มต้นเป็น 0
 
     for line_number, row in enumerate(reader, start=2):
         if None in row:
