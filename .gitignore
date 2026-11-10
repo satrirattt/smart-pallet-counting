@@ -3,3 +3,7 @@ camera_counts.db
 camera_counts.db-journal
 camera_counts.db-shm
 camera_counts.db-wal
+
+# Python bytecode
+__pycache__/
+*.py[cod]
