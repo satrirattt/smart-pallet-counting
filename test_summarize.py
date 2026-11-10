@@ -1,10 +1,18 @@
 import unittest
 from io import StringIO
+from pathlib import Path
 
 from summarize import summarize_csv
 
 
 class SummarizeCsvTests(unittest.TestCase):
+    def test_included_camera_counts_csv(self) -> None:
+        csv_file = Path(__file__).with_name("camera_counts.csv")
+        with csv_file.open(encoding="utf-8-sig", newline="") as file_obj:
+            totals = summarize_csv(file_obj)
+
+        self.assertEqual(totals, {"BOX-A": 5, "BOX-B": 5, "BOX-C": 1})
+
     def test_sums_rows_with_same_product_code(self) -> None:
         csv_data = (
             "product_code,quantity\n"
@@ -27,6 +35,14 @@ class SummarizeCsvTests(unittest.TestCase):
     def test_missing_required_column_raises_value_error(self) -> None:
         with self.assertRaisesRegex(ValueError, "product_code and quantity"):
             summarize_csv(StringIO("product_code\nBOX-A\n"))
+
+    def test_duplicate_column_name_raises_value_error(self) -> None:
+        with self.assertRaisesRegex(ValueError, "column names must be unique"):
+            summarize_csv(StringIO("product_code,quantity,quantity\nBOX-A,2,3\n"))
+
+    def test_extra_value_in_row_raises_value_error(self) -> None:
+        with self.assertRaisesRegex(ValueError, "Too many values on line 2"):
+            summarize_csv(StringIO("product_code,quantity\nBOX-A,2,unexpected\n"))
 
     def test_invalid_quantity_raises_value_error(self) -> None:
         with self.assertRaisesRegex(ValueError, "integer"):

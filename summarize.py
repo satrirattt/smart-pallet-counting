@@ -11,10 +11,15 @@ def summarize_csv(file_obj: TextIO) -> Dict[str, int]:
 
     if not reader.fieldnames or not required_columns.issubset(reader.fieldnames):
         raise ValueError("CSV must contain product_code and quantity columns")
+    if len(reader.fieldnames) != len(set(reader.fieldnames)):
+        raise ValueError("CSV column names must be unique")
 
     totals: Dict[str, int] = defaultdict(int)
 
     for line_number, row in enumerate(reader, start=2):
+        if None in row:
+            raise ValueError(f"Too many values on line {line_number}")
+
         product_code = (row.get("product_code") or "").strip()
         if not product_code:
             raise ValueError(f"Missing product_code on line {line_number}")

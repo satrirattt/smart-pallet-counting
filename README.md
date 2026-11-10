@@ -30,8 +30,9 @@ BOX-C: 1
 ```
 
 The script requires `product_code` and `quantity` columns. It reports an error
-when either is missing, a product code is empty, or a quantity is not a
-positive integer.
+when either is missing, column names are duplicated, a row contains more values
+than its header, a product code is empty, or a quantity is not a positive
+integer.
 
 ## SQL example
 
@@ -53,5 +54,6 @@ Run the CSV summarizer tests with Python's built-in test runner:
 python -m unittest -v
 ```
 
-The tests cover repeated product codes, an empty CSV, missing columns, invalid
-quantities, empty product codes, and duplicate SQL events.
+The tests cover the included CSV sample, repeated product codes, an empty CSV,
+missing or duplicate columns, extra row values, invalid quantities, empty
+product codes, and duplicate SQL events.
