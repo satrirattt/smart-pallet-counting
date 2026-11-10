@@ -51,7 +51,7 @@ class SummarizeCsvTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Too many values on line 2"):
             summarize_csv(StringIO("product_code,quantity\nBOX-A,2,unexpected\n"))
 
-    def test_invalid_quantity_raises_value_error(self) -> None:
+    def test_invalid_quantity_and_malformed_csv_raise_errors(self) -> None:
         with self.assertRaisesRegex(ValueError, "integer"):
             summarize_csv(StringIO("product_code,quantity\nBOX-A,abc\n"))
 

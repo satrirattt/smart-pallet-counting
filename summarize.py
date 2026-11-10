@@ -16,7 +16,8 @@ def summarize_csv(file_obj: TextIO) -> Dict[str, int]:
     if len(reader.fieldnames) != len(set(reader.fieldnames)):
         raise ValueError("CSV column names must be unique")
 
-    totals: Dict[str, int] = defaultdict(int) #รวมจำนวนสินค้ารหัสเดียวกันด้วย defaultdict เพื่อให้ค่าเริ่มต้นเป็น 0
+    # defaultdict เริ่มยอดของรหัสสินค้าใหม่ที่ 0
+    totals: Dict[str, int] = defaultdict(int)
 
     for line_number, row in enumerate(reader, start=2):
         # DictReader เก็บข้อมูลส่วนเกินไว้ใต้ key None เมื่อแถวนั้นมีค่ามากกว่าหัวคอลัมน์
