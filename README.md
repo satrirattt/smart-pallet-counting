@@ -141,6 +141,18 @@ BOX-C: 1
 - `object_count` — จำนวนวัตถุที่ตรวจพบ; ห้ามติดลบ แต่เป็น 0 ได้
 - `qr_text` — ข้อความจาก QR เช่น `PALLET-A`; เป็น `NULL` เมื่อไม่มี
 
+ตัวอย่าง SQL สำหรับดูข้อมูลทั้งหมด เรียงตามเวลาที่นับ (เปิดไฟล์
+`camera_counts.db` ด้วย SQLite client เช่น DB Browser for SQLite แล้วรันคำสั่งนี้):
+
+```sql
+SELECT id, timestamp, camera_id, object_count, qr_text
+FROM camera_count_results
+ORDER BY timestamp;
+```
+
+คำสั่งนี้แสดงข้อมูลตัวอย่าง 5 แถว โดยช่อง `qr_text` ที่ไม่มีข้อมูลจะแสดงเป็น
+`NULL`
+
 ข้อมูลตัวอย่างเดิมใน schema (เรียงตาม `id`):
 
 - `id 1` — `2026-11-09T09:00:00+07:00`, กล้อง `CAM-01`, นับได้ 3, QR `PALLET-A`
